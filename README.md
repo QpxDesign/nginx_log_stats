@@ -11,15 +11,37 @@ If you're using the default NGINX Log Format, this should be working right out o
 You can use the following flags to search using different parameters:
 - `-f/--file` - REQUIRED, specifcy the path to the file you wish to search through
 - `-s/--search`- OPTIONAL, either REGEX or text to match lines
-- `-b/--start_date`- OPTIONAL (must use with `-e/--end_date`), find all logs within certain timespan (use time format08/Nov/2023:08:04:05)
-- `-e/--end_date`- OPTIONAL (must use with `-b/--start_date`), find all logs within certain timespan (use time format08/Nov/2023:08:04:05)
+- `-b/--start_date`- OPTIONAL, find all logs within certain timespan (use time format 08/Nov/2023:08:04:05)
+- `-e/--end_date`- OPTIONAL, find all logs within certain timespan (use time format 08/Nov/2023:08:04:05)
 - `-w/--host`- OPTIONAL, match for specific host (like site.domain.com)
 - `-r/--request`- OPTIONAL, find all entries for specific request (like GET /home/)
 - `-st/--status`- OPTIONAL, find all entries for specific HTTP status code (like 200, 404, etc)
 - `-u/--unique` - OPTIONAL, only show latest request of each IP address within log selection
 - `-a/--analytics` - OPTIONAL, show a analytical view of your log selection, instead of just the raw logs
 
-Example Run: `ngxav -f access.log -u`
+Example Run: `ngxav -f access.log -a`
+Output:
+```
+===~ LOG SELECTION STATS ~===
+Total Requests: 70,759
+Requests Per Min: 13.07
+Average Body Transfer Speed: 3.05 MB/S
+
+Top 5 Requests:
+-GET /mtaAPI ~ 16,960
+-GET /get-trains ~ 13,969
+-GET /tripUpdatesAPI ~ 11,374
+-GET / ~ 7,526
+-GET /assets/TimelineIcon.svg ~ 5,594
+
+Top 5 Hosts:
+-api.marcmap.app ~ 29,795
+-amtrak-api.marcmap.app ~ 18,942
+-marcmap.app ~ 7,631
+-localhost ~ 6,597
+-quinnpatwardhan.com ~ 3,013
+```
+
 ### Contribute/Issues
 We welcome contributions and bug reports/issues! Just submit a pull request to the repo - [Github](https://github.com/qpxdesign/nginginx_log_stats)
 
