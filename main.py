@@ -16,6 +16,7 @@ parser.add_argument('-e','--end_date', help='provide like 08/Nov/2023:08:25:12')
 parser.add_argument('-w', '--host')
 parser.add_argument('-r', '--request')
 parser.add_argument('-st', '--status')
+parser.add_argument('-u','--unique',help='use this to only show one entry for every ip',action='store_true')
 
 args = parser.parse_args()
 
@@ -52,6 +53,17 @@ def parse_line(line):
             "status":fields[9]
             }
 
+def unique_ips_only(lines):
+    ip_occurances = {}
+    for line in lines:
+        ip = line.split(" ")[0]
+        if ip not in ip_occurances:
+            ip_occurances[ip] = line
+    ans = []
+    for address,entry in ip_occurances.items():
+        ans.append(entry)
+    return ans
+
 def parse_nginx_time_format(time):
     return datetime.strptime(time,"%d/%b/%Y:%H:%M:%S")
 
@@ -62,5 +74,7 @@ if __name__ == "__main__":
         for line in lines:
             if keep_log(line):
                 final_lines.append(line)
+        if args.unique is not None:
+            final_lines = unique_ips_only(final_lines)
         for line in final_lines:
             print(line)
