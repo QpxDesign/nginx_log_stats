@@ -5,7 +5,7 @@
 - No need to install any dependencies, uses built-in python packages only
 - Just clone this repo and (optinally) add this alias: `alias nls="python3 /path/to/dir/main.py"`
 
-### Ussage
+### Usage
 You can use the following flags to search using different parameters:
 - `-f/--file` - REQUIRED, specifcy the path to the file you wish to search through
 - `-s/--search`- OPTIONAL, either REGEX or text to match lines
@@ -14,6 +14,8 @@ You can use the following flags to search using different parameters:
 - `-w/--host`- OPTIONAL, match for specific host (like site.domain.com)
 - `-r/--request`- OPTIONAL, find all entries for specific request (like GET /home/)
 - `-st/--status`- OPTIONAL, find all entries for specific HTTP status code (like 200, 404, etc)
+- `-u/--unique` - OPTIONAL, only show latest request of each IP address within log selection
+- `-a/--analytics` - OPTIONAL, show a analytical view of your log selection, instead of just the raw logs
 
 ### License (MIT)
 MIT License

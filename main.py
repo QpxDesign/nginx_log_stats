@@ -16,6 +16,7 @@ parser.add_argument('-e','--end_date', help='provide like 08/Nov/2023:08:25:12')
 parser.add_argument('-w', '--host')
 parser.add_argument('-r', '--request')
 parser.add_argument('-st', '--status')
+parser.add_argument('-a', '--analytics',help='See analytical view of of log selection', action='store_true')
 parser.add_argument('-u','--unique',help='use this to only show one entry for every ip',action='store_true')
 
 args = parser.parse_args()
@@ -50,7 +51,9 @@ def parse_line(line):
             "time":fields[3].replace("[",""),
             "host":fields[5],
             "request":f'{fields[6]} {fields[7]}',
-            "status":fields[9]
+            "status":fields[9],
+            "body_bytes_sent":re.sub("[^\d\.]", "",fields[10]),
+            "request_time":re.sub("[^\d\.]", "",fields[15])
             }
 
 def unique_ips_only(lines):
@@ -67,6 +70,72 @@ def unique_ips_only(lines):
 def parse_nginx_time_format(time):
     return datetime.strptime(time,"%d/%b/%Y:%H:%M:%S")
 
+def generate_analytical_output(log_selection):
+    stats = {
+            "request_count":0,
+            "top_5_requests":{},
+            "top_5_hosts":{},
+            "average_body_byte_speed":0,
+            "average_requests_per_minute":0,
+            }
+    for line in log_selection:
+        parsed_line = parse_line(line)
+        stats["request_count"] += 1
+        try:
+            stats["average_body_byte_speed"] += (float(parsed_line["body_bytes_sent"])/(float(parsed_line["request_time"])+.00001))
+        except:
+            stats["average_body_byte_speed"] += 0
+        if parsed_line["request"] not in stats["top_5_requests"]:
+            stats["top_5_requests"][parsed_line["request"]] = {
+                    "request_text":parsed_line["request"],
+                    "count": 1
+                    }
+        stats["top_5_requests"][parsed_line["request"]]["count"] += 1
+
+        if parsed_line["host"] not in stats["top_5_hosts"]:
+            stats["top_5_hosts"][parsed_line["host"]] = {
+                    "host_text":parsed_line["host"],
+                    "count": 1
+                    }
+        stats["top_5_hosts"][parsed_line["host"]]["count"] += 1
+
+    stats["average_body_byte_speed"] = stats["average_body_byte_speed"] / stats["request_count"]
+    stats["average_requests_per_minute"] = stats["request_count"]/((parse_nginx_time_format(parse_line(log_selection[-1])["time"]) - parse_nginx_time_format(parse_line(log_selection[0])["time"])).total_seconds()/60)
+
+    new_requests = []
+    new_hosts = []
+    for request,entry in stats["top_5_requests"].items():
+        new_requests.append(entry)
+
+    for host,entry in stats["top_5_hosts"].items():
+        new_hosts.append(entry)
+
+    new_hosts.sort(key=lambda x:x != None and x.get("count"),reverse=True)
+    new_requests.sort(key=lambda x:x != None and x.get("count"),reverse=True)
+
+    stats["top_5_requests"] = new_requests
+    stats["top_5_hosts"] = new_hosts
+
+    print(f"""
+===~ LOG SELECTION STATS ~===
+Total Requests: {stats['request_count']}
+Requests Per Min: {stats['average_requests_per_minute']}
+Average Body Transfer Speed: {round(stats['average_body_byte_speed']/1024/1024,2)} MB/S
+
+Top 5 Requests:
+- {stats["top_5_requests"][0]["request_text"]} ~ {stats["top_5_requests"][0]["count"]}
+- {stats["top_5_requests"][1]["request_text"]} ~ {stats["top_5_requests"][1]["count"]}
+- {stats["top_5_requests"][2]["request_text"]} ~ {stats["top_5_requests"][2]["count"]}
+- {stats["top_5_requests"][3]["request_text"]} ~ {stats["top_5_requests"][3]["count"]}
+- {stats["top_5_requests"][4]["request_text"]} ~ {stats["top_5_requests"][4]["count"]}
+
+Top 5 Hosts:
+- {stats["top_5_hosts"][0]["host_text"]} ~ {stats["top_5_hosts"][0]["count"]}
+- {stats["top_5_hosts"][1]["host_text"]} ~ {stats["top_5_hosts"][1]["count"]}
+- {stats["top_5_hosts"][2]["host_text"]} ~ {stats["top_5_hosts"][2]["count"]}
+- {stats["top_5_hosts"][3]["host_text"]} ~ {stats["top_5_hosts"][3]["count"]}
+- {stats["top_5_hosts"][4]["host_text"]} ~ {stats["top_5_hosts"][4]["count"]}""")
+
 if __name__ == "__main__":
     with open(f'./{args.file}', 'r') as f:
         final_lines = []
@@ -74,7 +143,10 @@ if __name__ == "__main__":
         for line in lines:
             if keep_log(line):
                 final_lines.append(line)
-        if args.unique is not None:
+        if args.unique:
             final_lines = unique_ips_only(final_lines)
-        for line in final_lines:
-            print(line)
+        if args.analytics:
+            generate_analytical_output(final_lines)
+        else:
+            for line in final_lines:
+                print(line)
