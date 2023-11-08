@@ -1,6 +1,9 @@
 ## NGINX Log Stats
 ### Comb through NGINX logs instantly
 
+### Install
+Run this command to install the package from pip: `pip install nginx-log-stats`
+
 ### Usage
 To run this, use `ngxav`.
 
