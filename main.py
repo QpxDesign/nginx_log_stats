@@ -113,8 +113,16 @@ def generate_analytical_output(log_selection):
     new_hosts.sort(key=lambda x:x != None and x.get("count"),reverse=True)
     new_requests.sort(key=lambda x:x != None and x.get("count"),reverse=True)
 
-    stats["top_5_requests"] = new_requests
-    stats["top_5_hosts"] = new_hosts
+    stats["top_5_requests"] = new_requests[:5]
+    stats["top_5_hosts"] = new_hosts[:5]
+
+    top_5_hosts_output = ""
+    top_5_requests_output = ""
+    for item in stats["top_5_hosts"]:
+        top_5_hosts_output += f"-{item['host_text']} ~ {format(item['count'],',d')} \n".replace('"','')
+
+    for item in stats["top_5_requests"]:
+       top_5_requests_output += f"-{item['request_text']} ~ {format(item['count'],',d')} \n".replace('"','')
 
     print(f"""
 ===~ LOG SELECTION STATS ~===
@@ -123,18 +131,9 @@ Requests Per Min: {round(stats['average_requests_per_minute'],2)}
 Average Body Transfer Speed: {round(stats['average_body_byte_speed']/1024/1024,2)} MB/S
 
 Top 5 Requests:
-- {stats["top_5_requests"][0]["request_text"]} ~ {format(stats["top_5_requests"][0]["count"],',d')}
-- {stats["top_5_requests"][1]["request_text"]} ~ {format(stats["top_5_requests"][1]["count"],',d')}
-- {stats["top_5_requests"][2]["request_text"]} ~ {format(stats["top_5_requests"][2]["count"],',d')}
-- {stats["top_5_requests"][3]["request_text"]} ~ {format(stats["top_5_requests"][3]["count"],',d')}
-- {stats["top_5_requests"][4]["request_text"]} ~ {format(stats["top_5_requests"][4]["count"],',d')}
-
+{top_5_requests_output}
 Top 5 Hosts:
-- {stats["top_5_hosts"][0]["host_text"]} ~ {format(stats["top_5_hosts"][0]["count"],',d')}
-- {stats["top_5_hosts"][1]["host_text"]} ~ {format(stats["top_5_hosts"][1]["count"],',d')}
-- {stats["top_5_hosts"][2]["host_text"]} ~ {format(stats["top_5_hosts"][2]["count"],',d')}
-- {stats["top_5_hosts"][3]["host_text"]} ~ {format(stats["top_5_hosts"][3]["count"],',d')}
-- {stats["top_5_hosts"][4]["host_text"]} ~ {format(stats["top_5_hosts"][4]["count"],',d')}
+{top_5_hosts_output}
 """)
 
 if __name__ == "__main__":
