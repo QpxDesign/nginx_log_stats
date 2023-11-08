@@ -7,13 +7,13 @@
 
 ### Ussage
 You can use the following flags to search using different parameters:
-`-f/--file` - REQUIRED, specifcy the path to the file you wish to search through
-`-s/--search`- OPTIONAL, either REGEX or text to match lines
-`-b/--start_date`- OPTIONAL (must use with `-e/--end_date`), find all logs within certain timespan (use time format08/Nov/2023:08:04:05)
-`-e/--end_date`- OPTIONAL (must use with `-b/--start_date`), find all logs within certain timespan (use time format08/Nov/2023:08:04:05)
-`-w/--host`- OPTIONAL, match for specific host (like site.domain.com)
-`-r/--request`- OPTIONAL, find all entries for specific request (like GET /home/)
-`-st/--status`- OPTIONAL, find all entries for specific HTTP status code (like 200, 404, etc)
+- `-f/--file` - REQUIRED, specifcy the path to the file you wish to search through
+- `-s/--search`- OPTIONAL, either REGEX or text to match lines
+- `-b/--start_date`- OPTIONAL (must use with `-e/--end_date`), find all logs within certain timespan (use time format08/Nov/2023:08:04:05)
+- `-e/--end_date`- OPTIONAL (must use with `-b/--start_date`), find all logs within certain timespan (use time format08/Nov/2023:08:04:05)
+- `-w/--host`- OPTIONAL, match for specific host (like site.domain.com)
+- `-r/--request`- OPTIONAL, find all entries for specific request (like GET /home/)
+- `-st/--status`- OPTIONAL, find all entries for specific HTTP status code (like 200, 404, etc)
 
 ### License (MIT)
 MIT License
