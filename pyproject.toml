@@ -4,10 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.poetry]
 name = "nginx_log_stats"
-version = "1.0.1"
+version = "1.0.2"
 description = "Search through NGINX logs with advanced filters and support for displaying analytics about your selected log entries"
 readme = "README.md"
-
 
 authors = ["Quinn Patwardhan <quinn@qpxdesign.com>"]
 
