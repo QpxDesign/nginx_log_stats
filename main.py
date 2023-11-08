@@ -27,10 +27,10 @@ def keep_log(line):
     if args.search is not None and re.search(r''+str(args.search),string=line) is None:
         return False
     if args.start_date is not None and args.end_date is None:
-        if parsed_line['time'] < parse_nginx_time_format(args.start_date):
+        if parse_nginx_time_format(parsed_line['time']) < parse_nginx_time_format(args.start_date):
             return False
     if args.end_date is not None and args.start_date is None:
-        if parsed_line['time'] > parse_nginx_time_format(args.end_date):
+        if parse_nginx_time_format(parsed_line['time']) > parse_nginx_time_format(args.end_date):
             return False
     if args.start_date is not None and args.end_date is not None and (parse_nginx_time_format(parsed_line['time']) > parse_nginx_time_format(args.end_date) or parse_nginx_time_format(parsed_line['time']) < parse_nginx_time_format(args.start_date)):
         return False
