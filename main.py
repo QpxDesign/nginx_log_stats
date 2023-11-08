@@ -118,23 +118,24 @@ def generate_analytical_output(log_selection):
 
     print(f"""
 ===~ LOG SELECTION STATS ~===
-Total Requests: {stats['request_count']}
-Requests Per Min: {stats['average_requests_per_minute']}
+Total Requests: {format (stats['request_count'], ',d')}
+Requests Per Min: {round(stats['average_requests_per_minute'],2)}
 Average Body Transfer Speed: {round(stats['average_body_byte_speed']/1024/1024,2)} MB/S
 
 Top 5 Requests:
-- {stats["top_5_requests"][0]["request_text"]} ~ {stats["top_5_requests"][0]["count"]}
-- {stats["top_5_requests"][1]["request_text"]} ~ {stats["top_5_requests"][1]["count"]}
-- {stats["top_5_requests"][2]["request_text"]} ~ {stats["top_5_requests"][2]["count"]}
-- {stats["top_5_requests"][3]["request_text"]} ~ {stats["top_5_requests"][3]["count"]}
-- {stats["top_5_requests"][4]["request_text"]} ~ {stats["top_5_requests"][4]["count"]}
+- {stats["top_5_requests"][0]["request_text"]} ~ {format(stats["top_5_requests"][0]["count"],',d')}
+- {stats["top_5_requests"][1]["request_text"]} ~ {format(stats["top_5_requests"][1]["count"],',d')}
+- {stats["top_5_requests"][2]["request_text"]} ~ {format(stats["top_5_requests"][2]["count"],',d')}
+- {stats["top_5_requests"][3]["request_text"]} ~ {format(stats["top_5_requests"][3]["count"],',d')}
+- {stats["top_5_requests"][4]["request_text"]} ~ {format(stats["top_5_requests"][4]["count"],',d')}
 
 Top 5 Hosts:
-- {stats["top_5_hosts"][0]["host_text"]} ~ {stats["top_5_hosts"][0]["count"]}
-- {stats["top_5_hosts"][1]["host_text"]} ~ {stats["top_5_hosts"][1]["count"]}
-- {stats["top_5_hosts"][2]["host_text"]} ~ {stats["top_5_hosts"][2]["count"]}
-- {stats["top_5_hosts"][3]["host_text"]} ~ {stats["top_5_hosts"][3]["count"]}
-- {stats["top_5_hosts"][4]["host_text"]} ~ {stats["top_5_hosts"][4]["count"]}""")
+- {stats["top_5_hosts"][0]["host_text"]} ~ {format(stats["top_5_hosts"][0]["count"],',d')}
+- {stats["top_5_hosts"][1]["host_text"]} ~ {format(stats["top_5_hosts"][1]["count"],',d')}
+- {stats["top_5_hosts"][2]["host_text"]} ~ {format(stats["top_5_hosts"][2]["count"],',d')}
+- {stats["top_5_hosts"][3]["host_text"]} ~ {format(stats["top_5_hosts"][3]["count"],',d')}
+- {stats["top_5_hosts"][4]["host_text"]} ~ {format(stats["top_5_hosts"][4]["count"],',d')}
+""")
 
 if __name__ == "__main__":
     with open(f'./{args.file}', 'r') as f:
