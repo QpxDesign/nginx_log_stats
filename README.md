@@ -1,11 +1,10 @@
 ## NGINX Log Stats
 ### Comb through NGINX logs instantly
 
-### Install:
-- No need to install any dependencies, uses built-in python packages only
-- Just clone this repo and (optinally) add this alias: `alias nls="python3 /path/to/dir/main.py"`
-
 ### Usage
+To run this, use `ngxav`.
+
+If you're using the default NGINX Log Format, this should be working right out of the box.
 You can use the following flags to search using different parameters:
 - `-f/--file` - REQUIRED, specifcy the path to the file you wish to search through
 - `-s/--search`- OPTIONAL, either REGEX or text to match lines
@@ -16,6 +15,10 @@ You can use the following flags to search using different parameters:
 - `-st/--status`- OPTIONAL, find all entries for specific HTTP status code (like 200, 404, etc)
 - `-u/--unique` - OPTIONAL, only show latest request of each IP address within log selection
 - `-a/--analytics` - OPTIONAL, show a analytical view of your log selection, instead of just the raw logs
+
+Example Run: `ngxav -f access.log -u`
+### Contribute/Issues
+We welcome contributions and bug reports/issues! Just submit a pull request to the repo - [Github](https://github.com/qpxdesign/nginginx_log_stats)
 
 ### License (MIT)
 MIT License
