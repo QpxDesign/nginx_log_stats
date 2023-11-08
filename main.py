@@ -25,7 +25,7 @@ if args.file == None:
 
 def keep_log(line):
     parsed_line = parse_line(line)
-    if args.search is not None and re.search(r''+str(args.search),string=line) is None:
+    if args.search is not None and re.search(re.compile(args.search),string=line) is None:
         return False
     if args.start_date is not None and args.end_date is None:
         if parse_nginx_time_format(parsed_line['time']) < parse_nginx_time_format(args.start_date):
