@@ -51,19 +51,19 @@ def main():
         return {
                 "ip_address":fields[0],
                 "time":fields[3].replace("[",""),
-                "host":fields[5],
+                "host":fields[5].replace('"',""),
                 "request":f'{fields[6]} {fields[7]}',
                 "status":fields[9],
                 "body_bytes_sent":re.sub("[^\d\.]", "",fields[10]),
                 "request_time":re.sub("[^\d\.]", "",fields[15])
                 }
 
-    def unique_ips_only(lines):
+    def unique_ips_only(lines,field):
         ip_occurances = {}
         for line in lines:
-            ip = line.split(" ")[0]
-            if ip not in ip_occurances:
-                ip_occurances[ip] = line
+            unique_key = line.split(" ")[0]
+            if unique_key not in ip_occurances:
+                ip_occurances[unique_key] = line
         ans = []
         for address,entry in ip_occurances.items():
             ans.append(entry)
