@@ -58,7 +58,7 @@ def main():
                 "request_time":re.sub("[^\d\.]", "",fields[15])
                 }
 
-    def unique_ips_only(lines,field):
+    def unique_ips_only(lines):
         ip_occurances = {}
         for line in lines:
             unique_key = line.split(" ")[0]
