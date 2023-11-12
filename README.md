@@ -18,6 +18,7 @@ You can use the following flags to search using different parameters:
 - `-st/--status`- OPTIONAL, find all entries for specific HTTP status code (like 200, 404, etc)
 - `-u/--unique` - OPTIONAL, only show latest request of each IP address within log selection
 - `-a/--analytics` - OPTIONAL, show a analytical view of your log selection, instead of just the raw logs
+- `-l/--large <n>` - OPTIONAL, show the n-largest request bodys of log selection, defaults to 5
 
 Example Run: `ngxav -f access.log -a`
 Output:
@@ -26,6 +27,7 @@ Output:
 Total Requests: 70,759
 Requests Per Min: 13.07
 Average Body Transfer Speed: 3.05 MB/S
+Total Body Size: 30MB
 
 Top 5 Requests:
 -GET /mtaAPI ~ 16,960
@@ -40,6 +42,9 @@ Top 5 Hosts:
 -marcmap.app ~ 7,631
 -localhost ~ 6,597
 -quinnpatwardhan.com ~ 3,013
+
+Top 5 IP Addresses:
+<Redacted>
 ```
 
 ### Contribute/Issues

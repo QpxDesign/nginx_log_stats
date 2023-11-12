@@ -1,3 +1,4 @@
 test.txt
 .env
 dist/
+.DS_Store

@@ -19,6 +19,7 @@ parser.add_argument('-r', '--request')
 parser.add_argument('-st', '--status')
 parser.add_argument('-a', '--analytics',help='See analytical view of of log selection', action='store_true')
 parser.add_argument('-u','--unique',help='use this to only show one entry for every ip',action='store_true')
+parser.add_argument('-l','--large',help='find largest <n> requests, use like -l 10',action='store_const',const=5)
 
 args = parser.parse_args()
 
@@ -80,12 +81,14 @@ def main():
                 "top_5_ips":{},
                 "average_body_byte_speed":0,
                 "average_requests_per_minute":0,
+                "total_data_transfered":0
                 }
         for line in log_selection:
             parsed_line = parse_line(line)
             stats["request_count"] += 1
             try:
                 stats["average_body_byte_speed"] += (float(parsed_line["body_bytes_sent"])/(float(parsed_line["request_time"])+.00001))
+                stats["total_data_transfered"] += float(parsed_line["body_bytes_sent"])
             except:
                 stats["average_body_byte_speed"] += 0
             if parsed_line["request"] not in stats["top_5_requests"]:
@@ -143,7 +146,7 @@ def main():
             top_5_requests_output += f"- {item['request_text']} ~ {format(item['count'],',d')} \n".replace('"','')
 
         for item in stats["top_5_ips"]:
-            if item["ip_text"] is not "-":
+            if item["ip_text"] != "-":
                 top_5_ips_output += f"- {item['ip_text']} ~ {format(item['count'],',d')} \n".replace('"','')
 
         print(f"""
@@ -151,6 +154,7 @@ def main():
 Total Requests: {format (stats['request_count'], ',d')}
 Requests Per Min: {round(stats['average_requests_per_minute'],2)}
 Average Body Transfer Speed: {round(stats['average_body_byte_speed']/1024/1024,2)} MB/S
+Total Data Transfered: {round(stats['total_data_transfered']/1024/1024,2)}MB
 
 Top 5 Requests:
 {top_5_requests_output}
@@ -159,6 +163,19 @@ Top 5 Hosts:
 Top 5 IP Addresses:
 {top_5_ips_output}
 """)
+    def sort_by_body_size(lines):
+        parsed_lines = []
+        for line in lines:
+            parsed_lines.append({
+                "text":line,
+                "body_size":parse_line(line)["body_bytes_sent"]
+                })
+        parsed_lines.sort(key=lambda x:x != None and x.get("body_size"),reverse=True)
+        ans = []
+        for line in parsed_lines:
+            ans.append(line["text"])
+        return ans
+
     with open(f'./{args.file}', 'r') as f:
         final_lines = []
         lines = f.readlines()
@@ -169,9 +186,13 @@ Top 5 IP Addresses:
             final_lines = unique_ips_only(final_lines)
         if args.analytics:
             generate_analytical_output(final_lines)
-        else:
-            for line in final_lines:
-                print(line)
+            return
+        if args.large != None:
+            for line in sort_by_body_size(final_lines)[:int(args.large)]:
+                print(f"{str(round(int(parse_line(line)['body_bytes_sent'])/1024,2))}KB {parse_line(line)['ip_address']} {parse_line(line)['host']} {parse_line(line)['request']}")
+            return
+        for line in final_lines:
+            print(line)
 
 if __name__ == "__main__":
     main()
