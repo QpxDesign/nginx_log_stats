@@ -19,7 +19,7 @@ parser.add_argument('-r', '--request')
 parser.add_argument('-st', '--status')
 parser.add_argument('-a', '--analytics',help='See analytical view of of log selection', action='store_true')
 parser.add_argument('-u','--unique',help='use this to only show one entry for every ip',action='store_true')
-parser.add_argument('-l','--large',help='find largest <n> requests, use like -l 10',action='store_const',const=5)
+parser.add_argument('-l','--large',help='find largest <n> requests, use like -l 10')
 
 args = parser.parse_args()
 
@@ -51,13 +51,13 @@ def main():
         fields = line.split(" ")
         return {
                 "ip_address":fields[0],
-                "time":fields[3].replace("[",""),
-                "host":fields[5].replace('"',""),
-                "request":f'{fields[6]} {fields[7]}',
-                "status":fields[9],
-                "body_bytes_sent":re.sub("[^\d\.]", "",fields[10]),
-                "request_time":re.sub("[^\d\.]", "",fields[15])
-                }
+                "time":fields[3].replace("[","") if len(fields) >= 3 else '-',
+                "host":fields[5].replace('"',"") if len(fields) >= 5 else '-',
+                "request":f'{fields[6]} {fields[7]}' if len(fields) >= 6 else '-',
+                "status":fields[9] if len(fields) >= 9 else '-',
+                "body_bytes_sent":re.sub("[^\d\.]", "",fields[10]) if len(fields) >= 10 else '-',
+                "request_time":re.sub("[^\d\.]", "",fields[15]) if len(fields) >= 10 else '-'
+            }
 
     def unique_ips_only(lines):
         ip_occurances = {}
@@ -76,7 +76,7 @@ def main():
     def generate_analytical_output(log_selection):
         stats = {
                 "request_count":0,
-                "top_5_requests":{},
+                "tp_5_requests":{},
                 "top_5_hosts":{},
                 "top_5_ips":{},
                 "average_body_byte_speed":0,
@@ -166,19 +166,26 @@ Top 5 IP Addresses:
     def sort_by_body_size(lines):
         parsed_lines = []
         for line in lines:
-            parsed_lines.append({
-                "text":line,
-                "body_size":parse_line(line)["body_bytes_sent"]
+            if parse_line(line)["body_bytes_sent"] != None and parse_line(line)["body_bytes_sent"].isnumeric():
+                parsed_lines.append({
+                    "text":line,
+                    "body_size":parse_line(line)["body_bytes_sent"]
                 })
-        parsed_lines.sort(key=lambda x:x != None and x.get("body_size"),reverse=True)
+        parsed_lines.sort(key=lambda x:x != None and float(x.get("body_size")),reverse=True)
         ans = []
         for line in parsed_lines:
             ans.append(line["text"])
         return ans
 
+    def format_file_size(size_in_bytes):
+        if float(size_in_bytes) > 1048576:
+            return str(round(float(size_in_bytes)/1024/1024,2)) + "MB"
+        return str(round(float(size_in_bytes)/1024,2)) + "KB"
+
     with open(f'./{args.file}', 'r') as f:
         final_lines = []
         lines = f.readlines()
+        #print(parse_line(lines[5])["body_bytes_sent"])
         for line in lines:
             if keep_log(line):
                 final_lines.append(line)
@@ -187,9 +194,10 @@ Top 5 IP Addresses:
         if args.analytics:
             generate_analytical_output(final_lines)
             return
-        if args.large != None:
-            for line in sort_by_body_size(final_lines)[:int(args.large)]:
-                print(f"{str(round(int(parse_line(line)['body_bytes_sent'])/1024,2))}KB {parse_line(line)['ip_address']} {parse_line(line)['host']} {parse_line(line)['request']}")
+        if args.large != None and args.large.isnumeric():
+            l = sort_by_body_size(final_lines)
+            for line in l[:int(args.large)]:
+                print(f"{format_file_size(parse_line(line)['body_bytes_sent'])} {parse_line(line)['ip_address']} {parse_line(line)['host']} {parse_line(line)['request']}")
             return
         for line in final_lines:
             print(line)

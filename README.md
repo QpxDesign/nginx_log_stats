@@ -18,7 +18,7 @@ You can use the following flags to search using different parameters:
 - `-st/--status`- OPTIONAL, find all entries for specific HTTP status code (like 200, 404, etc)
 - `-u/--unique` - OPTIONAL, only show latest request of each IP address within log selection
 - `-a/--analytics` - OPTIONAL, show a analytical view of your log selection, instead of just the raw logs
-- `-l/--large <n>` - OPTIONAL, show the n-largest request bodys of log selection, defaults to 5
+- `-l/--large <n>` - OPTIONAL, show the n-largest request bodys of log selection
 
 Example Run: `ngxav -f access.log -a`
 Output:
