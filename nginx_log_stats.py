@@ -55,7 +55,7 @@ def main():
                 "host":fields[5].replace('"',"") if len(fields) >= 5 else '-',
                 "request":f'{fields[6]} {fields[7]}' if len(fields) >= 6 else '-',
                 "status":fields[9] if len(fields) >= 9 else '-',
-                "body_bytes_sent":re.sub("[^\d\.]", "",fields[10]) if len(fields) >= 10 else '-',
+                "body_bytes_sent": fields[10] if fields[10].isnumeric() and len(fields) >= 10 else 0,
                 "request_time":re.sub("[^\d\.]", "",fields[15]) if len(fields) >= 10 else '-'
             }
 
@@ -76,7 +76,7 @@ def main():
     def generate_analytical_output(log_selection):
         stats = {
                 "request_count":0,
-                "tp_5_requests":{},
+                "top_5_requests":{},
                 "top_5_hosts":{},
                 "top_5_ips":{},
                 "average_body_byte_speed":0,
@@ -91,6 +91,7 @@ def main():
                 stats["total_data_transfered"] += float(parsed_line["body_bytes_sent"])
             except:
                 stats["average_body_byte_speed"] += 0
+
             if parsed_line["request"] not in stats["top_5_requests"]:
                 stats["top_5_requests"][parsed_line["request"]] = {
                         "request_text":parsed_line["request"],
@@ -154,7 +155,7 @@ def main():
 Total Requests: {format (stats['request_count'], ',d')}
 Requests Per Min: {round(stats['average_requests_per_minute'],2)}
 Average Body Transfer Speed: {round(stats['average_body_byte_speed']/1024/1024,2)} MB/S
-Total Data Transfered: {round(stats['total_data_transfered']/1024/1024,2)}MB
+Total Data Transfered: {format_file_size(stats['total_data_transfered'])}
 
 Top 5 Requests:
 {top_5_requests_output}
@@ -166,7 +167,7 @@ Top 5 IP Addresses:
     def sort_by_body_size(lines):
         parsed_lines = []
         for line in lines:
-            if parse_line(line)["body_bytes_sent"] != None and parse_line(line)["body_bytes_sent"].isnumeric():
+            if parse_line(line)["body_bytes_sent"] != None:
                 parsed_lines.append({
                     "text":line,
                     "body_size":parse_line(line)["body_bytes_sent"]
@@ -178,9 +179,11 @@ Top 5 IP Addresses:
         return ans
 
     def format_file_size(size_in_bytes):
-        if float(size_in_bytes) > 1048576:
-            return str(round(float(size_in_bytes)/1024/1024,2)) + "MB"
-        return str(round(float(size_in_bytes)/1024,2)) + "KB"
+        if float(size_in_bytes) > 1024*1024*1024:
+            return str(format(int(round(float(size_in_bytes)/1024/1024/1024,0)),",d")) + "GB"
+        if float(size_in_bytes) > 1024*1024:
+            return str(format (int(round(int(size_in_bytes)/1024/1024,2)),',d')) + "MB"
+        return str(format (int(round(int(size_in_bytes)/1024,2)),',d')) + "KB"
 
     with open(f'./{args.file}', 'r') as f:
         final_lines = []
