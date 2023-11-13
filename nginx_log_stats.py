@@ -17,6 +17,7 @@ parser.add_argument('-e','--end_date', help='provide like 08/Nov/2023:08:25:12')
 parser.add_argument('-w', '--host')
 parser.add_argument('-r', '--request')
 parser.add_argument('-st', '--status')
+parser.add_argument('-ref','--referer')
 parser.add_argument('-a', '--analytics',help='See analytical view of of log selection', action='store_true')
 parser.add_argument('-u','--unique',help='use this to only show one entry for every ip',action='store_true')
 parser.add_argument('-l','--large',help='find largest <n> requests, use like -l 10')
@@ -45,6 +46,8 @@ def main():
             return False
         if args.status is not None and parsed_line["status"] != args.status:
             return False
+        if args.referer is not None and parsed_line["referer"] != args.referer:
+            return False
         return True
 
     def parse_line(line):
@@ -53,6 +56,7 @@ def main():
                 "ip_address":fields[0],
                 "time":fields[3].replace("[","") if len(fields) >= 3 else '-',
                 "host":fields[5].replace('"',"") if len(fields) >= 5 else '-',
+                "referer":fields[11].replace('"',''),
                 "request":f'{fields[6]} {fields[7]}' if len(fields) >= 6 else '-',
                 "status":fields[9] if len(fields) >= 9 else '-',
                 "body_bytes_sent": fields[10] if fields[10].isnumeric() and len(fields) >= 10 else 0,
@@ -185,7 +189,7 @@ Top 5 IP Addresses:
             return str(format (int(round(int(size_in_bytes)/1024/1024,2)),',d')) + "MB"
         return str(format (int(round(int(size_in_bytes)/1024,2)),',d')) + "KB"
 
-    with open(f'./{args.file}', 'r') as f:
+    with open(f'{args.file}', 'r') as f:
         final_lines = []
         lines = f.readlines()
         #print(parse_line(lines[5])["body_bytes_sent"])
