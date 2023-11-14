@@ -2,13 +2,12 @@ import os
 import argparse
 import re
 from datetime import datetime
-
+import time
 
 parser = argparse.ArgumentParser(
                     prog='nginx_log_stats',
                     description='gives you a statsitcal view of NGINX requests from an access.log',
                     epilog='For support, contact Quinn (https://github.com/qpxdesign)')
-
 
 parser.add_argument('-f', '--file', help='file to search in (your NGINX access.log)')
 parser.add_argument('-s', '--search', help='General search term to match specific log lines (like for User Agents, specific IPs, etc), either plaintext or regex')
@@ -21,6 +20,7 @@ parser.add_argument('-ref','--referer')
 parser.add_argument('-a', '--analytics',help='See analytical view of of log selection', action='store_true')
 parser.add_argument('-u','--unique',help='use this to only show one entry for every ip',action='store_true')
 parser.add_argument('-l','--large',help='find largest <n> requests, use like -l 10')
+parser.add_argument('-lst','--last',help='find all requests within the last <n> min')
 
 args = parser.parse_args()
 
@@ -47,6 +47,8 @@ def main():
         if args.status is not None and parsed_line["status"] != args.status:
             return False
         if args.referer is not None and parsed_line["referer"] != args.referer:
+            return False
+        if args.last is not None and parse_nginx_time_format(parsed_line["time"]).timestamp() < (time.time()- float(args.last)*60):
             return False
         return True
 
