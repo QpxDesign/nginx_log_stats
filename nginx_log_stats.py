@@ -3,6 +3,7 @@ import argparse
 import re
 from datetime import datetime
 import time
+import json
 
 parser = argparse.ArgumentParser(
                     prog='nginx_log_stats',
@@ -21,6 +22,7 @@ parser.add_argument('-a', '--analytics',help='See analytical view of of log sele
 parser.add_argument('-u','--unique',help='use this to only show one entry for every ip',action='store_true')
 parser.add_argument('-l','--large',help='find largest <n> requests, use like -l 10')
 parser.add_argument('-lst','--last',help='find all requests within the last <n> min')
+parser.add_argument('-ses','--session',help='gather analytics by session instead of by line (see docs)',action='store_true')
 
 args = parser.parse_args()
 
@@ -184,12 +186,90 @@ Top 5 IP Addresses:
             ans.append(line["text"])
         return ans
 
+    def sessionize(lines):
+        ip_occurances = {}
+        output = {}
+        SESSION_CUTOFF_MIN = 10
+        for line in lines:
+            parsed_line = parse_line(line)
+            ip = parsed_line["ip_address"]
+            if parsed_line["ip_address"] not in ip_occurances:
+                ip_occurances[ip] = {
+                        "ip_address":parsed_line["ip_address"],
+                        "lines": [line],
+                        "times": [parse_nginx_time_format(parsed_line["time"]).timestamp()]
+                        }
+            else:
+                ip_occurances[ip]["lines"].append(line)
+                ip_occurances[ip]["times"].append(parse_nginx_time_format(parsed_line["time"]).timestamp())
+        for ip,entry in ip_occurances.items():
+            sessions = []
+            index = 0
+            tmp = []
+            for l in entry["times"]:
+                if index == 0:
+                   tmp.append(entry["lines"][0])
+                elif l - entry["times"][index-1] < SESSION_CUTOFF_MIN*60:
+                   tmp.append(entry["lines"][index])
+                else:
+                   sessions.append(tmp)
+                   tmp = []
+                index += 1
+            ip_occurances[ip]["sessions"] = sessions
+        return [value for value in ip_occurances.values()]
+
     def format_file_size(size_in_bytes):
         if float(size_in_bytes) > 1024*1024*1024:
             return str(format(int(round(float(size_in_bytes)/1024/1024/1024,0)),",d")) + "GB"
         if float(size_in_bytes) > 1024*1024:
             return str(format (int(round(int(size_in_bytes)/1024/1024,2)),',d')) + "MB"
         return str(format (int(round(int(size_in_bytes)/1024,2)),',d')) + "KB"
+
+    def session_analysis(lines):
+        sessions = sessionize(lines)
+        stats = {
+                "total_count":0,
+                "host_paths":{},
+                "average_request_count":0,
+                "average_request_length":0,
+                }
+        for session_entry in sessions:
+            stats["total_count"] += 1
+            host_path = []
+            for line in session_entry["lines"]:
+                if len(host_path) == 0 or host_path[-1] != parse_line(line)["host"]:
+                    host_path.append(parse_line(line)["host"])
+            if str(host_path) not in stats["host_paths"]:
+                stats["host_paths"][str(host_path)] = {
+                    "path": str(host_path),
+                    "count":1,
+                }
+            else:
+                stats["host_paths"][str(host_path)]["count"] += 1
+            stats["average_request_count"] += len(host_path)
+            stats["average_request_count"] =  session_entry["times"][-1] - session_entry["times"][0]
+
+        stats["average_request_count"] = stats["average_request_count"] / stats["total_count"]
+        stats["average_request_length"] = stats["average_request_length"] / stats["total_count"]
+
+        stats["host_paths"] = [value for value in stats["host_paths"].values()]
+        stats["host_paths"].sort(key=lambda x:x != None and x.get("count"),reverse=True)
+
+        host_path_text = ""
+        for path_entry in stats["host_paths"][:5]:
+            host_path_text += f"- {path_entry['path'].replace(',',' --> ')} ({path_entry['count']})\n"
+        print(f"""
+SESSION STATS
+==============
+{stats['total_count']} Total Unique Sessions
+{stats['average_request_count']} Avg Requests Per Session
+{round(stats['average_request_length']/60)}min Avg Session Length
+
+MOST COMMON PATHS
+=================
+{host_path_text.replace('[','').replace(']','')}
+            """)
+
 
     with open(f'{args.file}', 'r') as f:
         final_lines = []
@@ -198,6 +278,11 @@ Top 5 IP Addresses:
         for line in lines:
             if keep_log(line):
                 final_lines.append(line)
+        if args.session:
+            session_analysis(final_lines)
+                      
+            #sessions_from_ip(final_lines)
+            return
         if args.unique:
             final_lines = unique_ips_only(final_lines)
         if args.analytics:

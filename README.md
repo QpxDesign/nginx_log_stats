@@ -1,14 +1,18 @@
 ## NGINX Log Stats
+
 ### Comb through NGINX logs instantly
 
 ### Install
+
 Run this command to install the package from pip: `pip install nginx-log-stats`
 
 ### Usage
+
 To run this, use `ngxav`.
 
 If you're using the default NGINX Log Format, this should be working right out of the box.
 You can use the following flags to search using different parameters:
+
 - `-f/--file` - REQUIRED, specifcy the path to the file you wish to search through
 - `-s/--search`- OPTIONAL, either REGEX or text to match lines
 - `-b/--start_date`- OPTIONAL, find all logs within certain timespan (use time format 08/Nov/2023:08:04:05)
@@ -20,9 +24,12 @@ You can use the following flags to search using different parameters:
 - `-a/--analytics` - OPTIONAL, show a analytical view of your log selection, instead of just the raw logs
 - `-l/--large <n>` - OPTIONAL, show the n-largest request bodys of log selection
 - `-ref/--referer` - OPTIONAL, only show requests that have specifced http referer
+- `-ses/--session` - OPTIONAL, show session-based analytics (a session is a series of user activity (requests) within a specific timespan between interactions)
 
-Example Run: `ngxav -f access.log -a`
+#### Example Run: `ngxav -f access.log -a`
+
 Output:
+
 ```
 ===~ LOG SELECTION STATS ~===
 Total Requests: 70,759
@@ -48,10 +55,30 @@ Top 5 IP Addresses:
 <Redacted>
 ```
 
+#### Example Run: `ngxav -f access.log -ses`
+
+```
+SESSION STATS
+==============
+3200 Total Unique Sessions
+0.0003125 Avg Requests Per Session
+0min Avg Session Length
+
+MOST COMMON PATHS
+=================
+- 'amtrak-api.marcmap.app' (1191)
+- 'api.marcmap.app' (439)
+- 'amtrak-api.marcmap.app' -->  'marcmap.app' -->  'amtrak-api.marcmap.app' (373)
+- 'quinnpatwardhan.com' (189)
+- 'marcmap.app' (186)
+```
+
 ### Contribute/Issues
+
 We welcome contributions and bug reports/issues! Just submit a pull request to the repo - [Github](https://github.com/qpxdesign/nginginx_log_stats)
 
 ### License (MIT)
+
 MIT License
 
 Copyright (c) [2023] [Quinn Patwardhan]
