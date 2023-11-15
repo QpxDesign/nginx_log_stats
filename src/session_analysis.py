@@ -45,7 +45,7 @@ def session_analysis(lines):
 SESSION STATS
 ==============
 {stats['total_count']} Total Unique Sessions
-{stats['average_request_count']} Avg Requests Per Session
+{round(stats['average_request_count'],2)} Avg Requests Per Session
 {round(stats['average_request_length']/60)}min Avg Session Length
 
 MOST COMMON PATHS
