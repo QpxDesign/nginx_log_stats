@@ -1,3 +1,5 @@
+from parse_line import parse_line
+ 
 def sort_by_body_size(lines):
     parsed_lines = []
     for line in lines:
