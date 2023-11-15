@@ -281,10 +281,17 @@ Top 5 IP Addresses:
 
         stats["host_paths"] = [value for value in stats["host_paths"].values()]
         stats["host_paths"].sort(key=lambda x:x != None and x.get("count"),reverse=True)
+        sessions.sort(key=lambda x:x != None and len(x.get("sessions")),reverse=True)
 
         host_path_text = ""
+        ips_text = ""
         for path_entry in stats["host_paths"][:5]:
             host_path_text += f"- {path_entry['path'].replace(',',' --> ')} ({path_entry['count']})\n"
+
+        for s in sessions[:10]:
+            ips_text += f"- {s['ip_address']} ({len(s['lines'])})\n"
+
+
         print(f"""
 SESSION STATS
 ==============
@@ -295,13 +302,16 @@ SESSION STATS
 MOST COMMON PATHS
 =================
 {host_path_text.replace('[','').replace(']','')}
-            """)
+
+IPS WITH MOST SESSIONS
+======================
+{ips_text}
+""")
 
 
     with open(f'{args.file}', 'r') as f:
         final_lines = []
         lines = f.readlines()
-        #print(parse_line(lines[5])["body_bytes_sent"])
         for line in lines:
             if keep_log(line):
                 final_lines.append(line)
