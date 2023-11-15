@@ -4,14 +4,26 @@ build-backend = "setuptools.build_meta"
 
 [tool.poetry]
 name = "nginx_log_stats"
-version = "1.22"
+version = "1.32"
 description = "Search through NGINX logs with advanced filters and support for displaying analytics about your selected log entries"
 readme = "README.md"
-
+packages = [
+{include = "nginx_log_stats.py", from = "src"},
+{include = "format_file_size.py", from = "src"},
+{include = "generate_analytical_output.py", from = "src"},
+{include = "parse_line.py", from = "src"},
+{include = "parse_nginx_time_format.py", from = "src"},
+{include = "sort_by_body_size.py", from = "src"},
+{include = "session_analysis.py", from = "src"},
+{include = "sessions_from_ip.py", from = "src"},
+{include = "unique_ips_only.py", from = "src"}
+]
 authors = ["Quinn Patwardhan <quinn@qpxdesign.com>"]
+include = ["src/*.py"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
 
 [tool.poetry.scripts]
 ngxav = "nginx_log_stats:main"
+

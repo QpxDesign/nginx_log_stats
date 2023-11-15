@@ -1,5 +1,5 @@
-from utils.parse_nginx_time_format import parse_nginx_time_format
-from utils.parse_line import parse_line
+from parse_nginx_time_format import parse_nginx_time_format
+from parse_line import parse_line
 
 def sessionize(lines):
     ip_occurances = {}

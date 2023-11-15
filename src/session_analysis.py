@@ -1,5 +1,5 @@
-from utils.sessionize import sessionize
-from utils.parse_line import parse_line
+from sessionize import sessionize
+from parse_line import parse_line
 
 def session_analysis(lines):
         sessions = sessionize(lines)

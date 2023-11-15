@@ -1,6 +1,6 @@
-from utils.parse_line import parse_line
-from utils.parse_nginx_time_format import parse_nginx_time_format
-from utils.format_file_size import format_file_size
+from parse_line import parse_line
+from parse_nginx_time_format import parse_nginx_time_format
+from format_file_size import format_file_size
 
 
 def generate_analytical_output(log_selection):
