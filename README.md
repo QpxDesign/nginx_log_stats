@@ -24,7 +24,8 @@ You can use the following flags to search using different parameters:
 - `-a/--analytics` - OPTIONAL, show a analytical view of your log selection, instead of just the raw logs
 - `-l/--large <n>` - OPTIONAL, show the n-largest request bodys of log selection
 - `-ref/--referer` - OPTIONAL, only show requests that have specifced http referer
-- `-ses/--session` - OPTIONAL, show session-based analytics (a session is a series of user activity (requests) within a specific timespan between interactions)
+- `-sa/--session_analytics` - OPTIONAL, show session-based analytics (a session is a series of user activity (requests) within a specific timespan between interactions)
+- `-ip_ses/----ip_session` - OPTIONAL, show all sessions for given IP (within filtered subset)
 
 #### Example Run: `ngxav -f access.log -a`
 

@@ -22,7 +22,8 @@ parser.add_argument('-a', '--analytics',help='See analytical view of of log sele
 parser.add_argument('-u','--unique',help='use this to only show one entry for every ip',action='store_true')
 parser.add_argument('-l','--large',help='find largest <n> requests, use like -l 10')
 parser.add_argument('-lst','--last',help='find all requests within the last <n> min')
-parser.add_argument('-ses','--session',help='gather analytics by session instead of by line (see docs)',action='store_true')
+parser.add_argument('-sa','--session_analytics',help='gather analytics by session instead of by line (see docs)',action='store_true')
+parser.add_argument('-ip_ses','--ip_session',help='see all sessions from ip')
 
 args = parser.parse_args()
 
@@ -225,6 +226,32 @@ Top 5 IP Addresses:
             return str(format (int(round(int(size_in_bytes)/1024/1024,2)),',d')) + "MB"
         return str(format (int(round(int(size_in_bytes)/1024,2)),',d')) + "KB"
 
+    def sessions_from_ip(lines):
+        sessions = sessionize(lines)
+        print(args.ip_session)
+        host_paths = []
+        session_start_times = []
+        session_end_times = []
+        for session_entry in sessions:
+            if session_entry["ip_address"] == args.ip_session:
+                print(len(sessions))
+                for session in session_entry["sessions"]:     
+                    host_path = []
+                    session_start_times.append(parse_line(session[0])["time"])
+                    session_end_times.append(parse_line(session[-1])["time"])
+                    for line in session:
+                        if len(host_path) == 0 or host_path[-1] != parse_line(line)["host"]:
+                            host_path.append(parse_line(line)["host"])     
+                    host_paths.append(host_path)
+        index = 0
+        for path in host_paths:
+             print('------------------------------')
+             print(f"======= {session_start_times[index]}")
+             print(str(path).replace('[','').replace(']','').replace(',', ' --> '))
+             print(f"======= {session_end_times[index]}")
+             print('------------------------------')
+             index += 1
+        
     def session_analysis(lines):
         sessions = sessionize(lines)
         stats = {
@@ -278,10 +305,11 @@ MOST COMMON PATHS
         for line in lines:
             if keep_log(line):
                 final_lines.append(line)
-        if args.session:
+        if args.session_analytics:
             session_analysis(final_lines)
-                      
-            #sessions_from_ip(final_lines)
+            return
+        if args.ip_session != None:
+            sessions_from_ip(final_lines)
             return
         if args.unique:
             final_lines = unique_ips_only(final_lines)

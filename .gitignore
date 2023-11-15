@@ -3,3 +3,4 @@ test.txt
 dist/
 .DS_Store
 access.log
+./access.log
