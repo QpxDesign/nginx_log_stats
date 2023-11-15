@@ -289,7 +289,7 @@ Top 5 IP Addresses:
             host_path_text += f"- {path_entry['path'].replace(',',' --> ')} ({path_entry['count']})\n"
 
         for s in sessions[:10]:
-            ips_text += f"- {s['ip_address']} ({len(s['lines'])})\n"
+            ips_text += f"- {s['ip_address']} ({len(s['sessions'])})\n"
 
 
         print(f"""
