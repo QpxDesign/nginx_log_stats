@@ -8,7 +8,6 @@ def sessions_from_ip(lines, ip):
     session_end_times = []
     for session_entry in sessions:
         if session_entry["ip_address"] == ip:
-            print(len(sessions))
             for session in session_entry["sessions"]:     
                 host_path = []
                 session_start_times.append(parse_line(session[0])["time"])

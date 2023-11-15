@@ -70,7 +70,7 @@ def main():
             session_analysis(final_lines)
             return
         if args.ip_session != None:
-            sessions_from_ip(final_lines)
+            sessions_from_ip(final_lines,ip=args.ip_session)
             return
         if args.unique:
             final_lines = unique_ips_only(final_lines)
