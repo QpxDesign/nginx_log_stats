@@ -25,7 +25,12 @@ You can use the following flags to search using different parameters:
 - `-l/--large <n>` - OPTIONAL, show the n-largest request bodys of log selection
 - `-ref/--referer` - OPTIONAL, only show requests that have specifced http referer
 - `-sa/--session_analytics` - OPTIONAL, show session-based analytics (a session is a series of user activity (requests) within a specific timespan between interactions)
-- `--uaos` - OPTIONAL,
+- `--uaos` - OPTIONAL, see all requests from devices running specific OS, from useragent
+- `--bot` - OPTIONAL, Show requests from bots (determined from user agent)
+- `--nobot` - OPTIONAL, Show requests NOT from bots (determined from user agent)
+- `--mobile` - OPTIONAL, Show requests from mobile (determined from user agent)
+- `--nomobile` - Show requests NOT from mobile (determined from user agent)'
+- `--ua_browser` - see all requests from specific browser
 
 #### Example Run: `ngxav -f access.log -a`
 
