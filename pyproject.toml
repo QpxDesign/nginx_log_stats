@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.poetry]
 name = "nginx_log_stats"
-version = "1.33.0"
+version = "1.33.1"
 description = "Search through NGINX logs with advanced filters and support for displaying analytics about your selected log entries"
 readme = "README.md"
 packages = [
@@ -17,7 +17,7 @@ packages = [
 {include = "session_analysis.py", from = "src"},
 {include = "sessions_from_ip.py", from = "src"},
 {include = "unique_ips_only.py", from = "src"},
-{include = "sessionize.py", from = "src"}
+{include = "sessionize.py", from = "src"},
 {include = "decipher_ua_agent.py", from = "src"}
 ]
 authors = ["Quinn Patwardhan <quinn@qpxdesign.com>"]

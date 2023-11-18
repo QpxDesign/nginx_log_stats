@@ -30,10 +30,12 @@ parser.add_argument('-l','--large',help='find largest <n> requests, use like -l 
 parser.add_argument('-lst','--last',help='find all requests within the last <n> min')
 parser.add_argument('-sa','--session_analytics',help='gather analytics by session instead of by line (see docs)',action='store_true')
 parser.add_argument('-ip_ses','--ip_session',help='see all sessions from ip')
-parser.add_argument('-ua_os, --useragent_os',help='see all requests from devices running specific OS, from useragent')
-parser.add_argument('-ua_bot', '--useragent_isbot',help='True/False, see all requests determined to be bots/or not')
-parser.add_argument('-ua_mobile','--useragent_ismobile', help='True/False, see all requests determined to be from mobile or not')
-parser.add_argument('-ua_browser','--useragent_browser',help='see all requests from specific browser')
+parser.add_argument('--uaos',help='see all requests from devices running specific OS, from useragent')
+parser.add_argument('--bot',help='Show requests from bots (determined from user agent)',action='store_true')
+parser.add_argument('--nobot',help='Show requests NOT from bots (determined from user agent)', action='store_true')
+parser.add_argument('--mobile', help='Show requests from mobile (determined from user agent)', action='store_true')
+parser.add_argument('--nomobile', help='Show requests NOT from mobile', action='store_true')
+parser.add_argument('--ua_browser',help='see all requests from specific browser')
 
 args = parser.parse_args()
 
@@ -63,7 +65,7 @@ def main():
             return False
         if args.last is not None and parse_nginx_time_format(parsed_line["time"]).timestamp() < (time.time()- float(args.last)*60):
             return False
-        if not decipher_ua_agent(line,args.useragent_os,args.useragent_ismobile,args.useragent_isbot, args.useragent_browser):
+        if not decipher_ua_agent(line,args.uaos, args.mobile, args.nomobile, args.bot, args.nobot, args.ua_browser):
             return False
         return True
 
