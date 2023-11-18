@@ -25,7 +25,11 @@ You can use the following flags to search using different parameters:
 - `-l/--large <n>` - OPTIONAL, show the n-largest request bodys of log selection
 - `-ref/--referer` - OPTIONAL, only show requests that have specifced http referer
 - `-sa/--session_analytics` - OPTIONAL, show session-based analytics (a session is a series of user activity (requests) within a specific timespan between interactions)
-- `-ip_ses/----ip_session` - OPTIONAL, show all sessions for given IP (within filtered subset)
+- `-ip_ses/--ip_session` - OPTIONAL, show all sessions for given IP (within filtered subset)
+- `-ua_os/--useragent_os` - OPTIONAL, see all requests from devices running specific OS, from useragents
+- `-ua_bot/--useragent_isbot` - OPTIONAL, True/False, see all requests determined to be bots/or not
+- `-ua_mobile/--useragent_ismobile` - OPTIONAL, True/False, see all requests determined to be from mobile/or not
+- `-ua_browser/--useragent_browser` - OPTIONAL, see all requests from specific browser
 
 #### Example Run: `ngxav -f access.log -a`
 
@@ -77,6 +81,9 @@ MOST COMMON PATHS
 ### Contribute/Issues
 
 We welcome contributions and bug reports/issues! Just submit a pull request to the repo - [Github](https://github.com/qpxdesign/nginginx_log_stats)
+
+### Dependencies
+- [user-agents](https://pypi.org/project/user-agents/)
 
 ### License (MIT)
 
