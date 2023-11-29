@@ -1,4 +1,3 @@
-test.txt
 .env
 dist/
 .DS_Store
@@ -6,3 +5,4 @@ access.log
 ./access.log
 **/__pycache__/
 __pycache__
+tests/

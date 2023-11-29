@@ -1,3 +1,3 @@
 rm dist/*
 poetry build
-python -m twine upload --repository pypi dist/* -u '__token__' -p $1
+python3 -m twine upload --repository pypi dist/* -u '__token__' -p $1
