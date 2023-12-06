@@ -61,7 +61,7 @@ Top 5 IP Addresses:
 <Redacted>
 ```
 
-#### Example Run: `ngxav -f access.log -ses`
+#### Example Run: `ngxav -f access.log -sa`
 
 ```
 SESSION STATS

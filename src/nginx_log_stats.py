@@ -72,7 +72,6 @@ def keep_log(line):
             return False
         return True
 
-
 def main():
     with open(f'{args.file}', 'r') as f:
         final_lines = []
