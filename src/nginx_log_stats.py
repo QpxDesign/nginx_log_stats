@@ -77,7 +77,7 @@ def main():
         final_lines = []
         lines = f.readlines()
         keep_lines = []
-        with Pool(multiprocessing.cpu_count()-1) as p:
+        with Pool(multiprocessing.cpu_count()) as p:
             keep_lines = p.map(keep_log,lines)
         for l in range(len(keep_lines)):
             if keep_lines[l]:
