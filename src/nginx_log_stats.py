@@ -1,6 +1,8 @@
 import argparse
 import re
 import time
+from multiprocessing import Pool
+import multiprocessing
 from format_file_size import format_file_size
 from generate_analytical_output import generate_analytical_output
 from parse_line import parse_line
@@ -10,6 +12,8 @@ from session_analysis import session_analysis
 from sessions_from_ip import sessions_from_ip
 from unique_ips_only import unique_ips_only
 from decipher_ua_agent import decipher_ua_agent
+
+start_time = time.time()
 
 parser = argparse.ArgumentParser(
                     prog='nginx_log_stats',
@@ -42,8 +46,7 @@ args = parser.parse_args()
 if args.file == None:
     raise Exception("File must be provided (your access.log).")
 
-def main():
-    def keep_log(line):
+def keep_log(line):
         parsed_line = parse_line(line)
         if args.search is not None and re.search(re.compile(args.search),string=line) is None:
             return False
@@ -69,12 +72,17 @@ def main():
             return False
         return True
 
+
+def main():
     with open(f'{args.file}', 'r') as f:
         final_lines = []
         lines = f.readlines()
-        for line in lines:
-            if keep_log(line):
-                final_lines.append(line)
+        keep_lines = []
+        with Pool(multiprocessing.cpu_count()-1) as p:
+            keep_lines = p.map(keep_log,lines)
+        for l in range(len(keep_lines)):
+            if keep_lines[l]:
+                final_lines.append(lines[l])
         if args.session_analytics:
             session_analysis(final_lines)
             return
@@ -96,3 +104,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    #print("finished in: ", time.time() - start_time)
