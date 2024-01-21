@@ -40,6 +40,7 @@ parser.add_argument('--nobot',help='Show requests NOT from bots (determined from
 parser.add_argument('--mobile', help='Show requests from mobile (determined from user agent)', action='store_true')
 parser.add_argument('--nomobile', help='Show requests NOT from mobile', action='store_true')
 parser.add_argument('--ua_browser',help='see all requests from specific browser')
+parser.add_argument('-t','--threads',help='specify how many threads to use, will be all by default')
 
 args = parser.parse_args()
 
@@ -77,7 +78,11 @@ def main():
         final_lines = []
         lines = f.readlines()
         keep_lines = []
-        with Pool(multiprocessing.cpu_count()) as p:
+        threads = multiprocessing.cpu_count()
+        if args.threads is not None:
+            threads = int(args.threads)
+        print(threads)
+        with Pool(threads) as p:
             keep_lines = p.map(keep_log,lines)
         for l in range(len(keep_lines)):
             if keep_lines[l]:

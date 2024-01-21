@@ -31,6 +31,7 @@ You can use the following flags to search using different parameters:
 - `--mobile` - OPTIONAL, Show requests from mobile (determined from user agent)
 - `--nomobile` - Show requests NOT from mobile (determined from user agent)'
 - `--ua_browser` - see all requests from specific browser
+- `-t/--threads` - specify how many threads to use, will be all by default
 
 #### Example Run: `ngxav -f access.log -a`
 
@@ -84,6 +85,7 @@ MOST COMMON PATHS
 We welcome contributions and bug reports/issues! Just submit a pull request to the repo - [Github](https://github.com/qpxdesign/nginginx_log_stats)
 
 ### Dependencies
+
 - [user-agents](https://pypi.org/project/user-agents/)
 
 ### License (MIT)

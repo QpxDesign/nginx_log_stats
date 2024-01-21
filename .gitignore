@@ -6,3 +6,4 @@ access.log
 **/__pycache__/
 __pycache__
 tests/
+test.txt
