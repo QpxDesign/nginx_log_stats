@@ -81,7 +81,6 @@ def main():
         threads = multiprocessing.cpu_count()
         if args.threads is not None:
             threads = int(args.threads)
-        print(threads)
         with Pool(threads) as p:
             keep_lines = p.map(keep_log,lines)
         for l in range(len(keep_lines)):

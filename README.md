@@ -1,6 +1,6 @@
 ## NGINX Log Stats
 
-### Comb through NGINX logs instantly
+### A multi-threaded, deep-search capable, full-featured, and intelligent NGINX log parser
 
 ### Install
 
