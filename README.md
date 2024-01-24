@@ -32,6 +32,7 @@ You can use the following flags to search using different parameters:
 - `--nomobile` - Show requests NOT from mobile (determined from user agent)'
 - `--ua_browser` - see all requests from specific browser
 - `-t/--threads` - specify how many threads to use, will be all by default
+- `-c/----conservememory` - specify wether or not to read files line by line to conserve memory (can't use with analytic commands)
 
 #### Example Run: `ngxav -f access.log -a`
 

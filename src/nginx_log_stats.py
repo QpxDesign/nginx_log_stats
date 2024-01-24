@@ -41,6 +41,7 @@ parser.add_argument('--mobile', help='Show requests from mobile (determined from
 parser.add_argument('--nomobile', help='Show requests NOT from mobile', action='store_true')
 parser.add_argument('--ua_browser',help='see all requests from specific browser')
 parser.add_argument('-t','--threads',help='specify how many threads to use, will be all by default')
+parser.add_argument('-c','--conservememory',help='specify wether or not to read files line by line to conserve memory',action='store_true')
 
 args = parser.parse_args()
 
@@ -73,37 +74,53 @@ def keep_log(line):
             return False
         return True
 
+    
 def main():
-    with open(f'{args.file}', 'r') as f:
-        final_lines = []
-        lines = f.readlines()
-        keep_lines = []
-        threads = multiprocessing.cpu_count()
-        if args.threads is not None:
-            threads = int(args.threads)
-        with Pool(threads) as p:
-            keep_lines = p.map(keep_log,lines)
-        for l in range(len(keep_lines)):
-            if keep_lines[l]:
-                final_lines.append(lines[l])
-        if args.session_analytics:
-            session_analysis(final_lines)
-            return
-        if args.ip_session != None:
-            sessions_from_ip(final_lines,ip=args.ip_session)
-            return
-        if args.unique:
-            final_lines = unique_ips_only(final_lines)
-        if args.analytics:
-            generate_analytical_output(final_lines)
-            return
-        if args.large != None and args.large.isnumeric():
-            l = sort_by_body_size(final_lines)
-            for line in l[:int(args.large)]:
-                print(f"{format_file_size(parse_line(line)['body_bytes_sent'])} {parse_line(line)['ip_address']} {parse_line(line)['host']} {parse_line(line)['request']}")
-            return
-        for line in final_lines:
-            print(line)
+    spent_ips = {}
+    if args.conservememory and not args.analytics and not args.session_analytics and not args.ip_session:
+        with open(f'{args.file}', 'r') as f:
+            for line in f:
+                if keep_log(line): 
+                    if args.unique:
+                        ip = parse_line(line)['ip_address']
+                        if ip not in spent_ips:
+                            spent_ips[ip] = True
+                            print(line)
+                    else:
+                        print(line)      
+            return         
+    else:
+        with open(f'{args.file}', 'r') as f:
+            final_lines = []
+            lines = f.readlines()
+            keep_lines = []
+            threads = multiprocessing.cpu_count()
+            if args.threads is not None:
+                threads = int(args.threads)
+            with Pool(threads) as p:
+                keep_lines = p.map(keep_log,lines)
+            for l in range(len(keep_lines)):
+                if keep_lines[l]:
+                    final_lines.append(lines[l])
+            if args.session_analytics:
+                session_analysis(final_lines)
+                return
+            if args.ip_session != None:
+                sessions_from_ip(final_lines,ip=args.ip_session)
+                return
+            if args.unique:
+                final_lines = unique_ips_only(final_lines)
+            if args.analytics:
+                generate_analytical_output(final_lines)
+                return
+            if args.large != None and args.large.isnumeric():
+                l = sort_by_body_size(final_lines)
+                for line in l[:int(args.large)]:
+                    print(f"{format_file_size(parse_line(line)['body_bytes_sent'])} {parse_line(line)['ip_address']} {parse_line(line)['host']} {parse_line(line)['request']}")
+                return
+            for line in final_lines:
+                print(line)
+                return
 
 if __name__ == "__main__":
     main()
