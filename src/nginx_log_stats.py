@@ -74,21 +74,21 @@ def keep_log(line):
             return False
         return True
 
-    
+
 def main():
     spent_ips = {}
     if args.conservememory and not args.analytics and not args.session_analytics and not args.ip_session:
         with open(f'{args.file}', 'r') as f:
             for line in f:
-                if keep_log(line): 
+                if keep_log(line):
                     if args.unique:
                         ip = parse_line(line)['ip_address']
                         if ip not in spent_ips:
                             spent_ips[ip] = True
                             print(line)
                     else:
-                        print(line)      
-            return         
+                        print(line)
+            return
     else:
         with open(f'{args.file}', 'r') as f:
             final_lines = []
@@ -120,7 +120,7 @@ def main():
                 return
             for line in final_lines:
                 print(line)
-                return
+            return
 
 if __name__ == "__main__":
     main()
