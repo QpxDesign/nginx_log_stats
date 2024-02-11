@@ -1,7 +1,7 @@
 ## NGINX Log Stats
 
 ### A multi-threaded, deep-search capable, full-featured, and intelligent NGINX log parser
-
+### NO LONGER UPDATED - RE-WRITTEN IN RUST ([NGXAV-RS](https://github.com/QpxDesign/ngxav-rs))
 ### Install
 
 Run this command to install the package from pip: `pip install nginx-log-stats`
